@@ -1,4 +1,5 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
+import groovy.util.logging.Slf4j
 
 import static org.codehaus.groovy.grails.commons.ControllerArtefactHandler.TYPE
 
@@ -21,8 +22,9 @@ import static org.codehaus.groovy.grails.commons.ControllerArtefactHandler.TYPE
 /**
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
+@Slf4j
 class ICalendarGrailsPlugin {
-    def version = "0.4.1" // added by set-version
+    def version = "0.4.2" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = '2.0.0 > *'
@@ -77,7 +79,7 @@ class ICalendarGrailsPlugin {
     }
 
     def doWithDynamicMethods = { ctx ->
-
+        log.info('Initializing iCalendar Plug-in')
         // hooking into render method
         application.controllerClasses.each() { controllerClass ->
             replaceRenderMethod(controllerClass)
@@ -85,7 +87,7 @@ class ICalendarGrailsPlugin {
     }
 
     def onChange = { event ->
-
+        log.info('Reloading iCalendar Plug-in')
         // only process controller classes
         if (application.isArtefactOfType(TYPE, event.source)) {
             def clazz = application.getControllerClass(event.source?.name)
@@ -103,8 +105,7 @@ class ICalendarGrailsPlugin {
      * 'text/calendar' used by the iCalendar plugin.
      */
     private void replaceRenderMethod(controllerClass) {
-
-        println "Modifying render method on controller '${controllerClass.name}'"
+        log.info('Modifying render method on controller {}', controllerClass.name)
 
         def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
